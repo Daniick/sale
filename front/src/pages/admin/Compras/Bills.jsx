@@ -37,7 +37,7 @@ const statusColorMap = {
   ordenado: "warning",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["id", "descripcion", "fecha", "hora"];
+const INITIAL_VISIBLE_COLUMNS = ["id", "nombre", "descripcion"];
 
 export default function App() {
   const iconClasses =
@@ -60,7 +60,7 @@ export default function App() {
   const [productos, setProductos] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/bitacoras")
+    fetch("http://127.0.0.1:8000/api/almuerzos")
       .then((res) => res.json())
       .then((data) => setProductos(data))
       .catch((error) => console.error(error));
@@ -126,11 +126,19 @@ export default function App() {
           </p>
         );
 
+      case "nombre":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-tiny capitalize text-default-400">
+              {producto.dia_semana}
+            </p>
+          </div>
+        );
       case "descripcion":
         return (
           <div className="flex flex-col">
             <p className="text-bold text-tiny capitalize text-default-400">
-              {producto.descripcion}
+              {producto.menu_descripcion}
             </p>
           </div>
         );

@@ -31,25 +31,25 @@ const Home = () => {
           ticket="pending"
           totalTickets="Martes"
           text="Ver Almuerzos"
-          enlace="/usuarios/add"
+          enlace="/compras"
         />
         <CardTicket
           ticket="inProcess"
           totalTickets="Miercoles"
           text="Ver Almuerzos"
-          enlace="/paginas/add"
+          enlace="/compras"
         />
         <CardTicket
           ticket="close"
           totalTickets="Jueves"
           text="Ver Almuerzos"
-          enlace="/roles/add"
+          enlace="/compras"
         />
         <CardTicket
           ticket="close"
           totalTickets="Viernes"
           text="Ver Almuerzos"
-          enlace="/roles/add"
+          enlace="/compras"
         />
       </div>
 

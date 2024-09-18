@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\AlmuerzoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BitacoraController;
 use App\Http\Controllers\EstadoController;
 use App\Http\Controllers\PaginaController;
+use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsuarioController;
@@ -41,6 +43,10 @@ Route::resource('/estados', EstadoController::class);
 Route::resource('/roles', RoleController::class);
 
 Route::resource('/usuarios', UserController::class);
+
+Route::resource('/almuerzos', AlmuerzoController::class);
+
+Route::resource('/reservas', ReservaController::class);
 
 Route::resource('/paginas', PaginaController::class);
 

@@ -45,14 +45,14 @@ const Sidebar = () => {
                 Dashboard
               </Link>
             </li>
-            {/* <li>
+            <li>
               <Link
                 to="/compras"
                 className="flex items-center mb-5 gap-4 px-4 py-4 text-white transition-colors rounded-lg hover:bg-zinc-800"
               >
-                <FaCashRegister className="text-yellow-300" /> Bitacora
+                <FaCashRegister className="text-yellow-300" /> Almuerzos
               </Link>
-            </li> */}
+            </li>
             <li>
               <Link
                 to="/usuarios"
