@@ -47,6 +47,14 @@ const Sidebar = () => {
             </li>
             <li>
               <Link
+                to="/usuarios"
+                className="flex items-center mb-5 gap-4 px-4 py-4 text-white transition-colors rounded-lg hover:bg-zinc-800"
+              >
+                <FaRegUser className="text-yellow-300" /> Usuarios
+              </Link>
+            </li>
+            <li>
+              <Link
                 to="/compras"
                 className="flex items-center mb-5 gap-4 px-4 py-4 text-white transition-colors rounded-lg hover:bg-zinc-800"
               >
@@ -55,20 +63,12 @@ const Sidebar = () => {
             </li>
             <li>
               <Link
-                to="/usuarios"
-                className="flex items-center mb-5 gap-4 px-4 py-4 text-white transition-colors rounded-lg hover:bg-zinc-800"
-              >
-                <FaRegUser className="text-yellow-300" /> Usuarios
-              </Link>
-            </li>
-            {/* <li>
-              <Link
                 to="/paginas"
                 className="flex items-center mb-5 gap-4 px-4 py-4 text-white transition-colors rounded-lg hover:bg-zinc-800"
               >
-                <RiPagesLine className="text-yellow-300" /> Palabras
+                <RiPagesLine className="text-yellow-300" /> Reservas
               </Link>
-            </li> */}
+            </li>
             {/* <li>
               <Link
                 to="/roles"
@@ -76,7 +76,7 @@ const Sidebar = () => {
               >
                 <GrUserAdmin className="text-yellow-300" /> Roles
               </Link>
-            </li> */}
+            </li>
             {/* <li>
               <button
                 onClick={() => setShowSubmenu(!showSubmenu)}

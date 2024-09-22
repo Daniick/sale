@@ -37,7 +37,13 @@ const statusColorMap = {
   ordenado: "warning",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["id", "nombre", "descripcion"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "id",
+  "nombre",
+  "almuerzo",
+  "stock",
+  "actions",
+];
 
 export default function App() {
   const iconClasses =
@@ -58,6 +64,48 @@ export default function App() {
 
   // Estado para los datos obtenidos de la API
   const [productos, setProductos] = useState([]);
+
+  const handleDelete = (id) => {
+    fetch(`http://127.0.0.1:8000/api/almuerzos/${id}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Eliminar el usuario de la lista local de productos
+          setProductos(productos.filter((producto) => producto.id !== id));
+        } else {
+          // Manejar errores si la solicitud no fue exitosa
+          console.error("Failed to delete user");
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting user:", error);
+      });
+  };
+
+  const handleDeleteAll = () => {
+    if (
+      window.confirm("Estas seguro que deseas eliminar todos los almuerzos?")
+    ) {
+      Promise.all(
+        productos.map((producto) =>
+          fetch(`http://127.0.0.1:8000/api/almuerzos/${producto.id}`, {
+            method: "DELETE",
+          })
+        )
+      )
+        .then((responses) => {
+          if (responses.every((response) => response.ok)) {
+            setProductos([]);
+          } else {
+            console.error("Failed to delete all products");
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting all products:", error);
+        });
+    }
+  };
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/almuerzos")
@@ -134,7 +182,7 @@ export default function App() {
             </p>
           </div>
         );
-      case "descripcion":
+      case "almuerzo":
         return (
           <div className="flex flex-col">
             <p className="text-bold text-tiny capitalize text-default-400">
@@ -143,10 +191,10 @@ export default function App() {
           </div>
         );
 
-      case "fecha":
+      case "stock":
         return (
           <p className="text-bold text-tiny capitalize text-default-400 text-[16px]">
-            {producto.fecha}
+            {producto.stock}
           </p>
         );
       case "hora":
@@ -172,6 +220,33 @@ export default function App() {
             <p className="text-bold text-tiny capitalize text-default-400">
               {/* funcion para que reste total menos pagado */}
             </p>
+          </div>
+        );
+
+      case "actions":
+        return (
+          <div className="relative flex justify-end items-center gap-2">
+            <Dropdown>
+              <DropdownTrigger>
+                <Button isIconOnly size="sm" variant="light">
+                  <VerticalDotsIcon className="text-default-300" />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu>
+                <DropdownItem
+                  startContent={<EditIcon className={iconClasses} />}
+                >
+                  <Link to={`/roles/edit/${producto.id}`}>Edit</Link>
+                </DropdownItem>
+
+                <DropdownItem
+                  startContent={<DeleteIcon className={iconClasses} />}
+                  onClick={() => handleDelete(producto.id)}
+                >
+                  Delete
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </div>
         );
 
@@ -234,14 +309,14 @@ export default function App() {
     }));
 
     const csv = Papa.unparse(formattedData);
-    const csvBlob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const csvBlob = new Blob([csv], { type: "text/csv" });
     saveAs(csvBlob, "data.csv");
   };
 
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-3 ">
-        <div className="flex justify-between  gap-3 items-end ">
+        <div className="flex justify-between gap-3 items-end ">
           <Input
             isClearable
             className="border-2 border-blue-500 rounded-xl w-[30%]"
@@ -304,7 +379,6 @@ export default function App() {
             </Dropdown>
           </div>
         </div>
-
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-medium">
             Total {productos.length} productos
@@ -336,6 +410,22 @@ export default function App() {
           >
             Export to PDF
           </button>
+          <div>
+            <Button
+              color="warning"
+              className="w-[130px] font-bold"
+              onClick={handleDeleteAll}
+            >
+              Eliminar todos
+            </Button>
+          </div>
+          <div>
+            <Link to="/compras/add">
+              <Button color="primary" className="w-[130px] absolute right-0">
+                Añadir Almuerzo
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -351,42 +441,14 @@ export default function App() {
 
   const bottomContent = React.useMemo(() => {
     return (
-      <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-medium text-default-400">
-          {selectedKeys === "all"
-            ? "All items selected"
-            : `${selectedKeys.size} of ${filteredItems.length} selected`}
-        </span>
-        <Pagination
-          isCompact
-          showControls
-          showShadow
-          color="primary"
-          page={page}
-          total={pages}
-          onChange={setPage}
-        />
-        <div className="hidden sm:flex w-[30%] justify-end gap-2">
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onPreviousPage}
-          >
-            Previous
-          </Button>
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onNextPage}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <Pagination
+        total={pages}
+        page={page}
+        onPageChange={setPage}
+        onItemsPerPageChange={setRowsPerPage}
+      />
     );
-  }, [selectedKeys, items.length, page, pages, filterValue]);
+  }, [pages, page, rowsPerPage]);
 
   return (
     <Table

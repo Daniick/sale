@@ -8,11 +8,11 @@ const EditarProducto = () => {
   const [usuario, setUsuario] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
-    apellido: "",
     email: "",
     password: "",
+    telefono: "",
+    curso: "",
     id_rol: "",
-    fecha_nacimiento: "",
   });
 
   const handleInputChange = (event) => {
@@ -49,7 +49,10 @@ const EditarProducto = () => {
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/roles`)
       .then((res) => res.json())
-      .then((data) => setUsuario(data))
+      .then((data) => {
+        console.log("Fetched roles:", data); // Aquí está el console.log
+        setUsuario(data);
+      })
       .catch((error) => console.error(error));
   }, []);
 
@@ -81,7 +84,7 @@ const EditarProducto = () => {
               placeholder="Ingrese Nuevo Nombre"
               onChange={handleInputChange}
             />
-            <label
+            {/* <label
               htmlFor="apellido"
               className="block text-sm font-medium text-gray-700"
             >
@@ -94,7 +97,7 @@ const EditarProducto = () => {
               className="mt-1 p-2 border rounded w-full"
               placeholder="Ingrese Nuevo Apellido"
               onChange={handleInputChange}
-            />
+            /> */}
             <label
               htmlFor="email"
               className="block text-sm font-medium text-gray-700"
@@ -124,6 +127,36 @@ const EditarProducto = () => {
               placeholder="**************"
               onChange={handleInputChange}
             />
+
+            <label
+              htmlFor="telefono"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Telefono
+            </label>
+            <input
+              type="text"
+              id="telefono"
+              name="telefono"
+              className="mt-1 p-2 border rounded w-full"
+              placeholder="Ingrese Nuevo Telefono"
+              onChange={handleInputChange}
+            />
+            <label
+              htmlFor="curso"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Curso
+            </label>
+            <input
+              type="text"
+              id="curso"
+              name="curso"
+              className="mt-1 p-2 border rounded w-full"
+              placeholder="Ingrese Nuevo Curso"
+              onChange={handleInputChange}
+            />
+
             <label
               htmlFor="id_rol"
               className="block text-sm font-medium text-gray-700"
@@ -142,7 +175,7 @@ const EditarProducto = () => {
               </option>
               {usuario.map((item) => (
                 <option key={item.id} value={item.id}>
-                  {item.nombre}
+                  {item.name}
                 </option>
               ))}
             </select>

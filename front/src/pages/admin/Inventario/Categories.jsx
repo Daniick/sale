@@ -33,17 +33,25 @@ import jsPDF from "jspdf";
 import { Link } from "react-router-dom";
 
 const statusColorMap = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
+  ordenado: "danger",
+  recibido: "success",
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["palabra", "espanol", "ingles", "actions"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "id",
+  "nombre",
+  "email",
+  "curso",
+  "dia",
+  "almuerzo",
+  "actions",
+];
 
 export default function App() {
+  const [cursoFilter, setCursoFilter] = useState("all");
+  const [diaFilter, setDiaFilter] = useState("all");
   const iconClasses =
     "text-xl text-default-500 pointer-events-none flex-shrink-0";
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(
@@ -51,43 +59,63 @@ export default function App() {
   );
   const [statusFilter, setStatusFilter] = React.useState("all");
 
-  const [rowsPerPage, setRowsPerPage] = React.useState(6);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState({
     column: "age",
     direction: "ascending",
   });
+
+  const cursos = [
+    "6A",
+    "6B",
+    "6C",
+    "7A",
+    "7B",
+    "7C",
+    "8A",
+    "8B",
+    "8C",
+    "9A",
+    "9B",
+    "9C",
+    "10A",
+    "10B",
+    "10C",
+    "11A",
+    "11B",
+    "11C",
+  ];
+
+  const dias = ["lunes", "martes", "miércoles", "jueves", "viernes"];
   const [page, setPage] = React.useState(1);
 
   // Estado para los datos obtenidos de la API
   const [productos, setProductos] = useState([]);
-  const handleDelete = (id) => {
-    if (window.confirm("¿Estás seguro de que deseas eliminar esta URL?")) {
-      fetch(`http://127.0.0.1:8000/api/paginas/${id}`, {
-        method: "DELETE",
-      })
-        .then((response) => {
-          if (response.ok) {
-            // Eliminación exitosa
-            // Puedes actualizar la lista de productos después de la eliminación si lo necesitas
-            // Por ejemplo, puedes recargar la lista de productos después de eliminar uno
-            window.location.reload(); // Recarga la página
-          } else {
-            // Manejar errores en la eliminación
-            console.error("Error al eliminar el producto");
-          }
-        })
-        .catch((error) =>
-          console.error("Error en la solicitud DELETE:", error)
-        );
-    }
-  };
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/paginas")
+    fetch("http://127.0.0.1:8000/api/reservas")
       .then((res) => res.json())
       .then((data) => setProductos(data))
       .catch((error) => console.error(error));
   }, []);
+
+  const handleDelete = (id) => {
+    fetch(`http://127.0.0.1:8000/api/reservas/${id}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Eliminar el usuario de la lista local de productos
+          setProductos(productos.filter((producto) => producto.id !== id));
+        } else {
+          // Manejar errores si la solicitud no fue exitosa
+          console.error("Failed to delete user");
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting user:", error);
+      });
+  };
 
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
@@ -101,23 +129,27 @@ export default function App() {
     let filteredProductos = [...productos];
 
     if (filterValue) {
-      filteredProductos = filteredProductos.filter(
-        (producto) =>
-          producto.palabra.toLowerCase().includes(filterValue.toLowerCase()) ||
-          producto.espanol.toLowerCase().includes(filterValue.toLowerCase())
+      filteredProductos = filteredProductos.filter((producto) =>
+        producto.estudiante.name
+          .toLowerCase()
+          .includes(filterValue.toLowerCase())
       );
     }
-    if (
-      statusFilter !== "all" &&
-      statusFilter.length !== statusOptions.length
-    ) {
-      filteredProductos = filteredProductos.filter((producto) =>
-        statusFilter.includes(producto.marca)
+
+    if (cursoFilter !== "all") {
+      filteredProductos = filteredProductos.filter(
+        (producto) => producto.estudiante.curso === cursoFilter
+      );
+    }
+
+    if (diaFilter !== "all") {
+      filteredProductos = filteredProductos.filter(
+        (producto) => producto.almuerzo.dia_semana === diaFilter
       );
     }
 
     return filteredProductos;
-  }, [productos, filterValue, statusFilter]);
+  }, [productos, filterValue, cursoFilter, diaFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -140,52 +172,55 @@ export default function App() {
 
   const renderCell = React.useCallback((producto, columnKey) => {
     const cellValue = producto[columnKey];
-    console.log(producto);
+
     switch (columnKey) {
       case "imagen":
         return (
           <User avatarProps={{ radius: "lg", src: producto.avatar }}></User>
         );
 
-      case "palabra":
+      case "nombre":
         return (
-          <p className="text-bold text-tiny capitalize text-black text-[20px]">
-            {producto.palabra}
+          <p className="text-bold text-tiny capitalize text-default-400 text-[16px]">
+            {producto.estudiante.name}
           </p>
-        );
-      case "espanol":
-        return (
-          <p className="text-bold text-tiny capitalize text-red-500 text-[20px]">
-            {producto.espanol}
-          </p>
-        );
-      case "ingles":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-small capitalize"></p>
-            <p className="text-bold text-tiny capitalize text-blue-500 text-[20px]">
-              {producto.ingles}
-            </p>
-          </div>
-        );
-      case "marca":
-        return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[cellValue.marca]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
         );
 
-      case "":
+      case "email":
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize"></p>
             <p className="text-bold text-tiny capitalize text-default-400">
-              {cellValue}
+              {producto.estudiante.email}
+            </p>
+          </div>
+        );
+      case "curso":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small capitalize"></p>
+            <p className="text-bold text-tiny capitalize text-default-400">
+              {producto.estudiante.curso}
+            </p>
+          </div>
+        );
+
+      case "dia":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small capitalize"></p>
+            <p className="text-bold text-tiny capitalize text-default-400">
+              {producto.almuerzo.dia_semana}
+            </p>
+          </div>
+        );
+
+      case "almuerzo":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-small capitalize"></p>
+            <p className="text-bold text-tiny capitalize text-default-400">
+              {producto.almuerzo.menu_descripcion}
             </p>
           </div>
         );
@@ -203,8 +238,9 @@ export default function App() {
                 <DropdownItem
                   startContent={<EditIcon className={iconClasses} />}
                 >
-                  <Link to={`/categorias/edit/${producto.id}`}>Edit</Link>
+                  <Link to={`/usuarios/edit/${producto.id}`}>Edit</Link>
                 </DropdownItem>
+
                 <DropdownItem
                   startContent={<DeleteIcon className={iconClasses} />}
                   onClick={() => handleDelete(producto.id)}
@@ -292,11 +328,35 @@ export default function App() {
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
+          <select
+            className="border-2 border-blue-500 rounded-xl w-[12%] py-2"
+            value={cursoFilter}
+            onChange={(e) => setCursoFilter(e.target.value)}
+          >
+            <option value="all">All Courses</option>
+            {cursos.map((curso) => (
+              <option key={curso} value={curso}>
+                {curso}
+              </option>
+            ))}
+          </select>
+          <select
+            className="border-2 border-blue-500 rounded-xl w-[10%] py-2"
+            value={diaFilter}
+            onChange={(e) => setDiaFilter(e.target.value)}
+          >
+            <option value="all">All Days</option>
+            {dias.map((dia) => (
+              <option key={dia} value={dia}>
+                {dia}
+              </option>
+            ))}
+          </select>
           <div className="flex gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
-                  className="bg-blue-500 text-white hidden"
+                  className="bg-blue-500 text-white hidden "
                   endContent={<ChevronDownIcon className="text-small" />}
                   variant="flat"
                 >
@@ -348,7 +408,7 @@ export default function App() {
 
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-medium">
-            {productos.length} Palabras Totales
+            Total {productos.length} productos
           </span>
           <label className="flex items-center text-default-400 text-medium">
             Rows per page:
@@ -377,20 +437,21 @@ export default function App() {
           >
             Export to PDF
           </button>
-          <div>
-            <Link to="/paginas/add">
-              <Button color="primary" className="w-[130px] absolute right-0">
-                Añadir Palabra
-              </Button>
-            </Link>
-          </div>
         </div>
-        <div></div>
+        <div>
+          {/* Botón para exportar a Excel */}
+          {/* <button onClick={handleExportExcel}>Export to Excel</button> */}
+          {/* Botón para exportar a PDF */}
+
+          {/* Resto del código... */}
+        </div>
       </div>
     );
   }, [
     filterValue,
     statusFilter,
+    cursoFilter,
+    diaFilter,
     visibleColumns,
     onRowsPerPageChange,
     productos.length,
@@ -401,7 +462,7 @@ export default function App() {
   const bottomContent = React.useMemo(() => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-medium text-default-600">
+        <span className="w-[30%] text-medium text-default-400">
           {selectedKeys === "all"
             ? "All items selected"
             : `${selectedKeys.size} of ${filteredItems.length} selected`}
@@ -444,7 +505,7 @@ export default function App() {
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       classNames={{
-        wrapper: "max-h-[382px]",
+        wrapper: "max-h-[600px]",
       }}
       selectedKeys={selectedKeys}
       selectionMode="multiple"

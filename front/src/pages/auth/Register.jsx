@@ -11,7 +11,30 @@ import {
 } from "react-icons/ri";
 
 const Register = () => {
-  const { handleSubmitPost } = useFetch();
+  /* s */
+  const handleSubmitPost = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+
+    // Verifica qué datos están siendo recogidos del formulario
+    console.log("Datos del formulario:", Object.fromEntries(formData));
+
+    try {
+      const response = await fetch(event.target.action, {
+        method: "POST",
+        body: formData,
+      });
+
+      const jsonData = await response.json();
+      console.log("Respuesta del servidor:", jsonData);
+
+      if (!response.ok) {
+        console.error("Error en el registro:", jsonData);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    }
+  };
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -28,7 +51,7 @@ const Register = () => {
             <RiUserLine className="absolute -translate-y-1/2 top-1/2 left-2 text-[#4791ff]" />
             <input
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               placeholder="Nombre"
               name="name"
             />
@@ -38,7 +61,7 @@ const Register = () => {
             <RiMailLine className="absolute -translate-y-1/2 top-1/2 left-2 text-[#4791ff]" />
             <input
               type="email"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               placeholder="Correo electrónico"
               name="email"
             />
@@ -48,7 +71,7 @@ const Register = () => {
             <RiLockLine className="absolute -translate-y-1/2 top-1/2 left-2 text-[#4791ff]" />
             <input
               type={showPassword ? "text" : "password"}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               placeholder="Contraseña"
               name="password"
             />
@@ -69,7 +92,7 @@ const Register = () => {
             <RiMailLine className="absolute -translate-y-1/2 top-1/2 left-2 text-[#4791ff]" />
             <input
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               placeholder="Teléfono"
               name="telefono"
             />
@@ -77,17 +100,45 @@ const Register = () => {
 
           <div className="relative mb-6">
             <RiMailLine className="absolute -translate-y-1/2 top-1/2 left-2 text-[#4791ff]" />
-            <input
+            {/* <input
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               placeholder="Curso"
               name="curso"
-            />
+            /> */}
+            <select
+              className="w-full px-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              name="curso"
+              defaultValue="hola"
+              required
+            >
+              <option value="" disabled>
+                Seleccionar Curso
+              </option>
+              <option value="6A">6A</option>
+              <option value="6B">6B</option>
+              <option value="6C">6C</option>
+              <option value="7A">7A</option>
+              <option value="7B">7B</option>
+              <option value="7C">7C</option>
+              <option value="8A">8A</option>
+              <option value="8B">8B</option>
+              <option value="8C">8C</option>
+              <option value="9A">9A</option>
+              <option value="9B">9B</option>
+              <option value="9C">9C</option>
+              <option value="10A">10A</option>
+              <option value="10B">10B</option>
+              <option value="10C">10C</option>
+              <option value="11A">11A</option>
+              <option value="11B">11B</option>
+              <option value="11C">11C</option>
+            </select>
           </div>
           <div className="relative mb-6">
             <RiMailLine className="absolute -translate-y-1/2 top-1/2 left-2 text-[#4791ff]" />
             <select
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-8 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               name="id_rol"
               defaultValue="2"
               disabled

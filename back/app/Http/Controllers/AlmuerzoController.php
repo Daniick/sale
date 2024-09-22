@@ -79,8 +79,25 @@ class AlmuerzoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(almuerzo $almuerzo)
+    public function destroy($id)
     {
-        //
+        try {
+            // Buscar el almuerzo por ID
+            $almuerzo = Almuerzo::findOrFail($id);
+
+            // Eliminar el almuerzo
+            $almuerzo->delete();
+
+            // Respuesta exitosa
+            return response()->json([
+                'message' => 'Almuerzo eliminado exitosamente.'
+            ], 200);
+        } catch (\Exception $e) {
+            // Manejar errores
+            return response()->json([
+                'message' => 'Error al eliminar el almuerzo.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

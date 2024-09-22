@@ -4,12 +4,12 @@ import { Link } from "react-router-dom";
 
 function Add() {
   const [name, setName] = useState("");
-  const [apellido, setApellido] = useState("");
+  const [telefono, setTelefono] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [curso, setCurso] = useState("");
   const [idCategoria, setIdCategoria] = useState("");
   const [inventario, setInventario] = useState([]);
-  const [estado, setEstado] = useState([]);
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/roles")
@@ -18,27 +18,23 @@ function Add() {
       .catch((error) => console.error(error));
   }, []);
 
-  // useEffect(() => {
-  //   fetch("http://127.0.0.1:8000/api/estados")
-  //     .then((res) => res.json())
-  //     .then((data) => setEstado(data))
-  //     .catch((error) => console.error(error));
-  // }, []);
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     switch (name) {
       case "name":
         setName(value);
         break;
-      case "apellido":
-        setApellido(value);
-        break;
       case "email":
         setEmail(value);
         break;
       case "password":
         setPassword(value);
+        break;
+      case "telefono":
+        setTelefono(value);
+        break;
+      case "curso":
+        setCurso(value);
         break;
       case "id_rol":
         setIdCategoria(value);
@@ -53,11 +49,11 @@ function Add() {
 
     const data = {
       name,
-      apellido,
+      telefono,
       email,
       password,
+      curso, // Incluyendo el campo curso
       id_rol: idCategoria,
-      // id_estado: estado,
     };
 
     fetch("http://127.0.0.1:8000/api/usuarios", {
@@ -70,9 +66,10 @@ function Add() {
     })
       .then((response) => response.json())
       .then((data) => {
-        // console.log(data);
+        console.log("API Response:", data); // Mostrar la respuesta de la API
         setName("");
-        setApellido("");
+        setTelefono("");
+        setCurso(""); // Reiniciar el valor del curso
         setEmail("");
         setPassword("");
         setIdCategoria("");
@@ -98,29 +95,14 @@ function Add() {
               htmlFor="name"
               className="block text-sm font-medium text-gray-700"
             >
-              Nombre del Usuario
+              Nombre Completo del Usuario
             </label>
             <input
               type="text"
               id="name"
               name="name"
               value={name}
-              className="mt-1 p-2 border rounded w-full"
-              onChange={handleInputChange}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="apellido"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Apellido del Usuario
-            </label>
-            <input
-              type="text"
-              id="apellido"
-              name="apellido"
-              value={apellido}
+              placeholder="Ingrese el Nombre"
               className="mt-1 p-2 border rounded w-full"
               onChange={handleInputChange}
             />
@@ -133,10 +115,11 @@ function Add() {
               Email del Usuario
             </label>
             <input
-              type="text"
+              type="email"
               id="email"
               name="email"
               value={email}
+              placeholder="Ingrese el Email"
               className="mt-1 p-2 border rounded w-full"
               onChange={handleInputChange}
             />
@@ -153,10 +136,47 @@ function Add() {
               id="password"
               name="password"
               value={password}
+              placeholder="Ingrese la Contraseña"
               className="mt-1 p-2 border rounded w-full"
               onChange={handleInputChange}
             />
           </div>
+          <div>
+            <label
+              htmlFor="telefono"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Teléfono
+            </label>
+            <input
+              type="text"
+              id="telefono"
+              name="telefono"
+              value={telefono}
+              placeholder="Ingrese el Teléfono"
+              className="mt-1 p-2 border rounded w-full"
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="curso"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Curso
+            </label>
+            <input
+              type="text"
+              id="curso"
+              name="curso"
+              value={curso}
+              placeholder="Ingrese el Curso"
+              className="mt-1 p-2 border rounded w-full"
+              onChange={handleInputChange}
+            />
+          </div>
+
           <div>
             <label
               htmlFor="id_rol"
@@ -176,7 +196,7 @@ function Add() {
               </option>
               {inventario.map((item) => (
                 <option key={item.id} value={item.id}>
-                  {item.nombre}
+                  {item.name}
                 </option>
               ))}
             </select>

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 function Main() {
   return (
-    <div className="bg-[#f16726] min-h-screen pt-5">
+    <div className="bg-[#fc844c] min-h-screen pt-5">
       <header className="w-[70%] flex justify-between items-center p-4 mb-20 mx-auto border-b-1 border-black">
         <img
           className="h-[60px] w-[60px] rounded-full"

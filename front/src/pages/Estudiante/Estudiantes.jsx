@@ -9,6 +9,7 @@ import { Navigate } from "react-router-dom";
 const Estudiantes = () => {
   const { user } = useMyContext();
   const [almuerzos, setAlmuerzos] = useState([]);
+  const [showProfile, setShowProfile] = useState(false); // Estado para controlar el hover
 
   useEffect(() => {
     // Función para obtener los almuerzos desde la API
@@ -16,7 +17,6 @@ const Estudiantes = () => {
       try {
         const response = await fetch("http://127.0.0.1:8000/api/almuerzos");
         const data = await response.json();
-        console.log("Datos de almuerzos:", data);
         setAlmuerzos(data);
       } catch (error) {
         console.error("Error al obtener los almuerzos:", error);
@@ -72,8 +72,21 @@ const Estudiantes = () => {
   return (
     <section className="bg-orange-500">
       {!user && <Navigate to="/main" />}
-      <Header />
+      <Header
+        onProfileHover={() => setShowProfile(true)}
+        onProfileLeave={() => setShowProfile(false)}
+      />
       <div className="p-12">
+        {showProfile && user && (
+          <div className="absolute bg-white p-4 rounded shadow-lg">
+            <h2 className="text-xl">Perfil de {user.user.name}</h2>
+            <p>Email: {user.user.email}</p>
+            <p>ID: {user.user.id}</p>
+            {/* Más información del estudiante */}
+          </div>
+        )}
+
+        {/* Resto del contenido */}
         <div className="flex items-center justify-between mb-10">
           <h1 className="text-4xl text-black">
             Bienvenido Estudiante {user && user.user.name}!
@@ -86,7 +99,7 @@ const Estudiantes = () => {
 
         {/* Renderizar CardsEstudiante para cada día de la semana */}
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"].map(
+          {["lunes", "martes", "miércoles", "jueves", "viernes"].map(
             (dia, index) => {
               const almuerzoDelDia = filtrarPorDia(dia);
               const descripcion =
@@ -100,10 +113,10 @@ const Estudiantes = () => {
                 <CardsEstudiante
                   key={index}
                   ticket="total"
-                  totalTickets={dia}
+                  totalTickets={dia.charAt(0).toUpperCase() + dia.slice(1)} // Capitaliza el nombre del día
                   text={descripcion}
-                  almuerzoId={almuerzoId} // Añade almuerzoId como prop
-                  userId={user ? user.user.id : null} // Añade userId como prop
+                  almuerzoId={almuerzoId}
+                  userId={user ? user.user.id : null}
                   enlace="/compras"
                   onReservar={() => almuerzoId && reservarAlmuerzo(almuerzoId)}
                 />

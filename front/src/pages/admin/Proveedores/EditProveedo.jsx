@@ -5,11 +5,12 @@ import { useParams, Link } from "react-router-dom";
 const EditProveedo = () => {
   const { id } = useParams();
   const [proveedor, setProveedor] = useState({
-    nombre: "",
+    dia_semana: "",
+    menu_descripcion: "",
+    stock: "",
     id_estado: "",
   });
   const [estados, setEstados] = useState([]);
-  const [roles, setRoles] = useState([]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -19,7 +20,7 @@ const EditProveedo = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    fetch(`http://127.0.0.1:8000/api/roles/${id}`, {
+    fetch(`http://127.0.0.1:8000/api/almuerzos/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -30,75 +31,89 @@ const EditProveedo = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        setProveedor({ nombre: "", id_estado: "" });
+        setProveedor({
+          dia_semana: "",
+          menu_descripcion: "",
+          stock: "",
+          id_estado: "",
+        });
       })
       .catch((error) => console.log(error));
   };
-
-  useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/estados`)
-      .then((res) => res.json())
-      .then((data) => setEstados(data))
-      .catch((error) => console.error(error));
-  }, []);
-
-  // useEffect(() => {
-  //   fetch(`http://127.0.0.1:8000/api/roles`)
-  //     .then((res) => res.json())
-  //     .then((data) => setRoles(data))
-  //     .catch((error) => console.error(error));
-  // }, []);
-  console.log(roles);
-
   return (
     <div>
       <div className="w-[100%] h-[60%] mx-auto p-6 bg-white rounded shadow">
         <div className="flex justify-between">
-          <h2 className="text-xl font-semibold mb-4">Actualizar Proveedor</h2>
+          <h2 className="text-xl font-semibold mb-4">Actualizar Almuerzo</h2>
           <Button color="primary" className="w-[80px]">
-            <Link to="/roles">Back</Link>
+            <Link to="/compras">Back</Link>
           </Button>
         </div>
         <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-12">
-          <div className="">
+          {/* Campo para día de la semana */}
+          <div>
             <label
-              htmlFor="nombre"
+              htmlFor="dia_semana"
               className="block text-sm font-medium text-gray-700"
             >
-              Nombre
-            </label>
-            <input
-              type="text"
-              id="nombre"
-              name="nombre"
-              className="mt-1 p-2 border rounded w-full"
-              placeholder="Nombre Proveedor"
-              value={proveedor.nombre}
-              onChange={handleInputChange}
-            />
-            <label
-              htmlFor="id_estado"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Estado
+              Día de la Semana
             </label>
             <select
-              name="id_estado"
-              id="id_estado"
+              id="dia_semana"
+              name="dia_semana"
               className="mt-1 p-2 border rounded w-full"
-              value={proveedor.id_estado}
+              value={proveedor.dia_semana}
               onChange={handleInputChange}
             >
               <option value="" disabled>
-                Selecciona un Estado
+                Selecciona un día
               </option>
-              {estados.map((estado) => (
-                <option key={estado.id} value={estado.id}>
-                  {estado.nombre}
-                </option>
-              ))}
+              <option value="Lunes">Lunes</option>
+              <option value="Martes">Martes</option>
+              <option value="Miércoles">Miércoles</option>
+              <option value="Jueves">Jueves</option>
+              <option value="Viernes">Viernes</option>
             </select>
           </div>
+
+          <div>
+            <label
+              htmlFor="menu_descripcion"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Descripción del Menú
+            </label>
+            <input
+              type="text"
+              id="menu_descripcion"
+              name="menu_descripcion"
+              className="mt-1 p-2 border rounded w-full"
+              placeholder="Descripción del menú"
+              value={proveedor.menu_descripcion}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          {/* Campo para stock */}
+          <div>
+            <label
+              htmlFor="stock"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Stock
+            </label>
+            <input
+              type="number"
+              id="stock"
+              name="stock"
+              className="mt-1 p-2 border rounded w-full"
+              placeholder="Stock"
+              value={proveedor.stock}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          {/* Campo para estado */}
 
           <button
             type="submit"

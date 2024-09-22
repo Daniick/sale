@@ -14,7 +14,11 @@ class ReservaController extends Controller
      */
     public function index()
     {
-        //
+        // Cargamos las reservas junto con el usuario y el almuerzo asociado
+        $reservas = Reserva::with(['estudiante:id,name,email,curso,id_rol', 'almuerzo:id,dia_semana,menu_descripcion'])->get();
+
+
+        return response()->json($reservas);
     }
 
     /**
@@ -94,8 +98,10 @@ class ReservaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(reserva $reserva)
+    public function destroy($id)
     {
-        //
+        $reserva = Reserva::find($id);
+        $reserva->delete();
+        return response()->json(['Reserva cancelada: ' => $reserva], 200);
     }
 }
